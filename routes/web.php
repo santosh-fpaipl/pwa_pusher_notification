@@ -20,3 +20,7 @@ Route::get('/', function () {
 Route::get('/refresh', function(Request $request){
     return view('refresh');
 })->name('refresh');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
