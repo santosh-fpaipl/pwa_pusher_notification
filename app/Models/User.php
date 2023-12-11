@@ -42,4 +42,46 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function pushNotifications()
+    {
+        return $this->morphMany(PushNotification::class, 'subscribable');
+    }
+    
+
+    /**
+    * Determine if the model owns the given subscription.
+    *
+    * @param  \NotificationChannels\WebPush\PushSubscription  $subscription
+    * @return bool
+    */
+    public function ownsPushNotification($subscription)
+    {
+            return (string) $subscription->subscribable_id === (string) $this->getKey() &&
+                        $subscription->subscribable_type === $this->getMorphClass();
+    }
+
+    /**
+    * Delete subscription by endpoint.
+    *
+    * @param  string  $endpoint
+    * @return void
+    */
+    public function deletePushNotification($endpoint)
+    {
+        $this->pushNotifications()
+                ->where('endpoint', $endpoint)
+                ->delete();
+    }
+
+    /**
+    * Get all of the subscriptions.
+    *
+    * @return \Illuminate\Database\Eloquent\Collection
+    */
+    public function routeNotificationForWebPush()
+    {
+        return $this->pushNotifications;
+    }
+    
 }
